@@ -1,36 +1,31 @@
-## Welcome to GitHub Pages
+#### Welcome to the COMP467 Pages
 
-You can use the [editor on GitHub](https://github.com/muratBekgi/PaintingTool/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+This program was fully created with JAVA code, it has functionalities such as brush, pencil, eraser, rectangle , circle and line where you can change the color flawlessly, and choose transparency as you please. It's a Desktop app.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Libraries used
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
 ```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
+# mport javax.imageio.ImageIO;
+# import javax.swing.*;
+# import javax.swing.Timer;
+# import javax.swing.event.ChangeEvent;
+# import javax.swing.event.ChangeListener;
+# import javax.swing.filechooser.FileNameExtensionFilter;
 
-1. Numbered
-2. List
+# import java.awt.event.*;
+# import java.awt.*;
+# import java.awt.geom.*;
+# import java.awt.image.BufferedImage;
+# import java.io.File;
+# import java.io.IOException;
+# import java.text.DecimalFormat;
+# import java.util.*;
 
-**Bold** and _Italic_ and `Code` text
 
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/muratBekgi/PaintingTool/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+For more details see [PaintingTool GitHub Page] (https://github.com/muratBekgi/PaintingTool)
 
 ### Support or Contact
 
