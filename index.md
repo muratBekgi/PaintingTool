@@ -23,7 +23,7 @@ This program was fully created with JAVA code, it has functionalities such as br
 # import java.io.IOException;
 # import java.text.DecimalFormat;
 # import java.util.*;
-
+```
 
 For more details see [PaintingTool GitHub Page] (https://github.com/muratBekgi/PaintingTool)
 
