@@ -1,6 +1,5 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -10,7 +9,6 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -19,13 +17,15 @@ public class paintingTool extends JFrame {
     JMenuBar menubar;
 
     JButton brushBut,
+            pencilBut,
+            eraserBut,
             lineBut,
             ellipseBut,
             rectBut,
             strokeBut,
-            fillBut,
-            eraserBut,
-            pencilBut;
+            fillBut;
+    // clearBut;
+
 
     // Slider used to change the transparency
     JSlider transSlider;
@@ -76,7 +76,7 @@ public class paintingTool extends JFrame {
     public paintingTool() {
 
         // Define the defaults for the JFrame
-        this.setSize(800, 600);
+        this.setSize(1000, 1000);
         this.setTitle("Java Paint");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setJMenuBar(menubar);
@@ -116,27 +116,32 @@ public class paintingTool extends JFrame {
         // Make all the buttons in toolButton by passing the
         // button icon.
         brushBut = toolButton("./src/brush.png", 1);
-        lineBut = toolButton("./src/Line.png", 2);
-        ellipseBut = toolButton("./src/Ellipse.png", 3);
-        rectBut = toolButton("./src/Rectangle.png", 4);
-        eraserBut = toolButton("./src/eraser.png", 7);
-        pencilBut = toolButton("./src/pencil.png", 8);
+        pencilBut = toolButton("./src/pencil.png", 2);
+        eraserBut = toolButton("./src/eraser.png", 3);
+        lineBut = toolButton("./src/line.png", 4);
+        ellipseBut = toolButton("./src/ellipse.png", 5);
+        rectBut = toolButton("./src/rectangle.png", 6);
+        //clearBut = toolButton("./src/clear.png", 9);
+
+
 
         // Make all the buttons in colorEditButton by passing the
         // button icon and true for stroke color or false for fill
 
-        strokeBut = colorEditButton("./src/Stroke.png", 5, true);
-        fillBut = colorEditButton("./src/Fill.png", 6, false);
+        strokeBut = colorEditButton("./src/stroke.png", 7, true);
+        fillBut = colorEditButton("./src/fill.png", 8, false);
 
         // Add the buttons to the box panel
         boxPanel.add(brushBut);
+        boxPanel.add(pencilBut);
+        boxPanel.add(eraserBut);
         boxPanel.add(lineBut);
         boxPanel.add(ellipseBut);
         boxPanel.add(rectBut);
         boxPanel.add(strokeBut);
         boxPanel.add(fillBut);
-        boxPanel.add(eraserBut);
-        boxPanel.add(pencilBut);
+        //boxPanel.add(clearBut);
+
 
         // Add the transparent label and slider
         transLabel = new JLabel("Transparent: 1");
@@ -145,7 +150,7 @@ public class paintingTool extends JFrame {
         brushLabel = new JLabel("Brush Size: 10");
 
         // Min value, Max value and starting value for slider
-        transSlider = new JSlider(1, 99, 99);
+        transSlider = new JSlider(1, 100, 100);
         brushSlider = new JSlider(1, 10, 10);
 
 
@@ -269,7 +274,7 @@ public class paintingTool extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 currentAction = actionNum;
                 // set stroke size depending on pencil or brush
-                if (currentAction != 8) {
+                if (currentAction != 2) {
                     strokeSize = 5;
                 } else {
                     strokeSize = 1;
@@ -320,42 +325,45 @@ public class paintingTool extends JFrame {
                 public void mousePressed(MouseEvent e) {
                     drawStart = new Point(e.getX(), e.getY());
 
-                    if (currentAction != 1 && currentAction != 8 && currentAction != 7) {
+                    if (currentAction != 1 && currentAction != 2 && currentAction != 3) {
                         // When the mouse is pressed get x & y position
                         drawEnd = drawStart;
                         repaint();
                     }
-                    if (currentAction == 8) {
+                    if (currentAction == 2) {
                         graphicsForDrawing = getGraphics();
                         graphicsForDrawing.setColor(Color.BLACK);
                         dragging = true;
                     }
-                    if(currentAction == 1)
-                    {
+                    if(currentAction == 1) {
                         brushPaths.add(new drawPath(new Point(e.getPoint()), strokeColor, brushVal, transparentVal));
                     }
-                    if(currentAction == 7)
-                    {
+
+                    if(currentAction == 3) {
                         brushPaths.add(new drawPath(new Point(e.getPoint()), Color.white, brushVal, 1));
+                    }
+
+                    if (currentAction == 9) {
+                        repaint();
                     }
                 }
 
                 public void mouseReleased(MouseEvent e) {
 
-                    if (currentAction != 1 && currentAction != 8 && currentAction != 7) {
+                    if (currentAction != 1 && currentAction != 2 && currentAction != 3) {
                         // Create a shape using the starting x & y
                         // and finishing x & y positions
                         Shape aShape = null;
 
-                        if (currentAction == 2) {
+                        if (currentAction == 4) {
 
                             aShape = drawLine(drawStart.x, drawStart.y, e.getX(), e.getY());
 
-                        } else if (currentAction == 3) {
+                        } else if (currentAction == 5) {
 
                             aShape = drawEllipse(drawStart.x, drawStart.y, e.getX(), e.getY());
 
-                        } else if (currentAction == 4) {
+                        } else if (currentAction == 6) {
 
                             // Create a new rectangle using x & y coordinates
                             aShape = drawRectangle(drawStart.x, drawStart.y, e.getX(), e.getY());
@@ -376,7 +384,7 @@ public class paintingTool extends JFrame {
                         repaint();
 
                     }
-                    if (currentAction == 8) {
+                    if (currentAction == 2) {
                         if (dragging == false)
                             return; // Nothing to do because the user isn't drawing.
                         dragging = false;
@@ -394,12 +402,12 @@ public class paintingTool extends JFrame {
                     // If this is a brush have shapes go on the screen quickly
                     // x and y will get the end position of the shape
 
-                        Shape aShape = null;
-                        int x = e.getX();
-                        int y = e.getY();
+                    Shape aShape = null;
+                    int x = e.getX();
+                    int y = e.getY();
 
-                        if (currentAction == 1 || currentAction == 7) {
-                            brushPaths.get(brushPaths.size() - 1).addPoint(e.getPoint());
+                    if (currentAction == 1 || currentAction == 3) {
+                        brushPaths.get(brushPaths.size() - 1).addPoint(e.getPoint());
                             /*
                             strokeSize = brushVal;
 
@@ -413,19 +421,19 @@ public class paintingTool extends JFrame {
                             shapeStroke.add(strokeColor);
                             transPercent.add(transparentVal);
                             strokeSizes.add(strokeSize);*/
-                        } else if (currentAction == 8) {
-                            strokeSize = 1;
+                    } else if (currentAction == 2) {
+                        strokeSize = 1;
 
-                            aShape = drawLine(drawStart.x, drawStart.y, x, y);
-                            shapes.add(aShape);
-                            shapeFill.add(fillColor);
-                            shapeStroke.add(strokeColor);
-                            transPercent.add(transparentVal);
-                            strokeSizes.add(strokeSize);
-                        }
+                        aShape = drawLine(drawStart.x, drawStart.y, x, y);
+                        shapes.add(aShape);
+                        shapeFill.add(fillColor);
+                        shapeStroke.add(strokeColor);
+                        transPercent.add(transparentVal);
+                        strokeSizes.add(strokeSize);
+                    }
 
                     // Get the final x & y position after the mouse is dragged
-                    if (currentAction == 1 || currentAction == 8 || currentAction == 7) {
+                    if (currentAction == 1 || currentAction == 2 || currentAction == 3) {
                         drawStart = new Point(e.getX(), e.getY());
                         drawEnd = new Point(e.getX(), e.getY());
                     }
@@ -477,13 +485,13 @@ public class paintingTool extends JFrame {
                 graphSettings.fill(s);
             }
 
-            for(drawPath dp : brushPaths)
-            {
+            for(drawPath dp : brushPaths) {
+
                 graphSettings.setStroke(dp.getStrokeSettings());
                 graphSettings.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
                 graphSettings.setPaint(dp.getColor());
-                for(int i = 0; i < dp.getPath().size()-1; i++)
-                {
+
+                for(int i = 0; i < dp.getPath().size()-1; i++) {
                     graphSettings.drawLine(dp.getPath().get(i).x, dp.getPath().get(i).y, dp.getPath().get(i+1).x, dp.getPath().get(i+1).y);
                 }
             }
@@ -500,16 +508,16 @@ public class paintingTool extends JFrame {
 
                 Shape aShape = null;
 
-                if (currentAction == 2 || currentAction == 8) {
+                if (currentAction == 4 || currentAction == 2) {
 
                     aShape = drawLine(drawStart.x, drawStart.y, drawEnd.x, drawEnd.y);
                     graphSettings.draw(aShape);
 
-                } else if (currentAction == 3) {
+                } else if (currentAction == 5) {
 
                     aShape = drawEllipse(drawStart.x, drawStart.y, drawEnd.x, drawEnd.y);
                     graphSettings.draw(aShape);
-                } else if (currentAction == 4) {
+                } else if (currentAction == 6) {
 
                     // Create a new rectangle using x & y coordinates
                     aShape = drawRectangle(drawStart.x, drawStart.y, drawEnd.x, drawEnd.y);
@@ -560,8 +568,7 @@ public class paintingTool extends JFrame {
         private ArrayList<Point> path;
         private Stroke strokeSettings;
         private Color color;
-        public drawPath(Point start, Color color, float width, float alpha)
-        {
+        public drawPath(Point start, Color color, float width, float alpha) {
             path = new ArrayList<>();
             path.add(start);
             this.color = new Color((float)color.getRed()/255, (float)color.getGreen()/255, (float)color.getBlue()/255, alpha);
