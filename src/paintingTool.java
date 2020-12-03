@@ -23,8 +23,8 @@ public class paintingTool extends JFrame {
             ellipseBut,
             rectBut,
             strokeBut,
-            fillBut;
-    // clearBut;
+            fillBut,
+            clearBut;
 
 
     // Slider used to change the transparency
@@ -121,9 +121,7 @@ public class paintingTool extends JFrame {
         lineBut = toolButton("./src/line.png", 4);
         ellipseBut = toolButton("./src/ellipse.png", 5);
         rectBut = toolButton("./src/rectangle.png", 6);
-        //clearBut = toolButton("./src/clear.png", 9);
-
-
+        clearBut = toolButton("./src/clear.png", 9);
 
         // Make all the buttons in colorEditButton by passing the
         // button icon and true for stroke color or false for fill
@@ -140,7 +138,7 @@ public class paintingTool extends JFrame {
         boxPanel.add(rectBut);
         boxPanel.add(strokeBut);
         boxPanel.add(fillBut);
-        //boxPanel.add(clearBut);
+        boxPanel.add(clearBut);
 
 
         // Add the transparent label and slider
@@ -212,6 +210,7 @@ public class paintingTool extends JFrame {
             }
         });
 
+
         openAction.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent arg0) {
@@ -279,6 +278,17 @@ public class paintingTool extends JFrame {
                 } else {
                     strokeSize = 1;
                 }
+
+                if (currentAction == 9) {
+                    shapes.clear();
+                    shapeFill.clear();
+                    shapeStroke.clear();
+                    transPercent.clear();
+                    strokeSizes.clear();
+                    brushPercent.clear();
+                    brushPaths.clear();
+                    repaint();
+                }
             }
         });
 
@@ -343,9 +353,6 @@ public class paintingTool extends JFrame {
                         brushPaths.add(new drawPath(new Point(e.getPoint()), Color.white, brushVal, 1));
                     }
 
-                    if (currentAction == 9) {
-                        repaint();
-                    }
                 }
 
                 public void mouseReleased(MouseEvent e) {
@@ -444,7 +451,7 @@ public class paintingTool extends JFrame {
 
 
         public void paintComponent(Graphics g) {
-
+            super.paintComponent(g);
             // Class used to define the shapes to be drawn and rendered on screen
             graphSettings = (Graphics2D) g;
             bgColor = graphSettings.getBackground();
