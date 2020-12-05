@@ -22,6 +22,7 @@ IntelliJ IDEA was used as a primary developmnet tool.
   * Color filled shape and frame
   * Transparency
   * Brush Size
+  * Undo
 * Application Features
   * New project
   * Open File
