@@ -58,7 +58,7 @@ public class paintingTool extends JFrame {
     BufferedImage srcImg;
     private int strokeSize;
 
-    private ArrayList<drawPath> brushPaths = new ArrayList<>();
+    ArrayList<Brush> brushPaths = new ArrayList<>();
     // ArrayLists that contain each shape drawn along with
     // that shapes stroke and fill
     ArrayList<Shape> shapes = new ArrayList<Shape>();
@@ -78,8 +78,8 @@ public class paintingTool extends JFrame {
 
     // to keep track of shapes to be removed from backward
     public void set() {
-        i = shapes.size();
-        j = shapeFill.size();
+        i = shapes.size() - 1;
+        j = shapeFill.size() - 1;
 
 //		System.out.println("shapeStroke size: " + shapeStroke.size());
 //		System.out.println("shapeFill size: " + shapeFill.size());
@@ -270,6 +270,8 @@ public class paintingTool extends JFrame {
                         brushPercent.clear();
                         brushPaths.clear();
 
+                        repaint();
+
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -297,15 +299,15 @@ public class paintingTool extends JFrame {
         button.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                currentAction = actionNum;
+
                 // set stroke size depending on pencil or brush
-                if (currentAction != 2) {
+                if (actionNum != 2) {
                     strokeSize = 5;
                 } else {
                     strokeSize = 1;
                 }
 
-                if (currentAction == 9) {
+                if (actionNum == 9) {
                     shapes.clear();
                     shapeFill.clear();
                     shapeStroke.clear();
@@ -313,17 +315,24 @@ public class paintingTool extends JFrame {
                     strokeSizes.clear();
                     brushPercent.clear();
                     brushPaths.clear();
+
+                    srcImg = null;
+                    imgLoaded = false;
+
                     repaint();
                 }
 
-                if (currentAction == 10) {
+                if (actionNum == 10) {
                     if (shapes.size() > 0) {
                         System.out.println("size: " + shapes.size());
                         System.out.println("i: " + i);
-                        shapes.remove(i);
+                        shapes.remove(shapes.size() - 1);
                         repaint();
-                        i--;
                     }
+                }
+                if(actionNum >= 1 && actionNum <= 6)
+                {
+                    currentAction = actionNum;
                 }
             }
         });
@@ -392,7 +401,7 @@ public class paintingTool extends JFrame {
 
                 public void mouseReleased(MouseEvent e) {
 
-                    if (currentAction != 1 && currentAction != 2 && currentAction != 3) {
+                    if (currentAction != 1 && currentAction != 2 && currentAction != 3 && currentAction != 9 && currentAction != 10) {
                         // Create a shape using the starting x & y
                         // and finishing x & y positions
                         Shape aShape = null;
@@ -452,7 +461,7 @@ public class paintingTool extends JFrame {
                     int y = e.getY();
 
                     if (currentAction == 1 || currentAction == 3) {
-                        brushPaths.get(brushPaths.size() - 1).addPoint(e.getPoint());
+                        brushPaths.get(brushPaths.size() - 1).mouseDragged(e.getPoint());
                         /*
                          * strokeSize = brushVal;
                          *
@@ -530,16 +539,13 @@ public class paintingTool extends JFrame {
                 graphSettings.fill(s);
             }
 
-            for (drawPath dp : brushPaths) {
+            for (Brush dp : brushPaths) {
 
                 graphSettings.setStroke(dp.getStrokeSettings());
                 graphSettings.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
                 graphSettings.setPaint(dp.getColor());
 
-                for (int i = 0; i < dp.getPath().size() - 1; i++) {
-                    graphSettings.drawLine(dp.getPath().get(i).x, dp.getPath().get(i).y, dp.getPath().get(i + 1).x,
-                            dp.getPath().get(i + 1).y);
-                }
+                dp.draw(graphSettings);
             }
 
             // Guide shape used for drawing
@@ -621,10 +627,8 @@ public class paintingTool extends JFrame {
         }
     }
 
-    public class drawPath {
+    public class drawPath extends Brush{
         private ArrayList<Point> path;
-        private Stroke strokeSettings;
-        private Color color;
 
         public drawPath(Point start, Color color, float width, float alpha) {
             path = new ArrayList<>();
@@ -632,6 +636,19 @@ public class paintingTool extends JFrame {
             this.color = new Color((float) color.getRed() / 255, (float) color.getGreen() / 255,
                     (float) color.getBlue() / 255, alpha);
             strokeSettings = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        }
+
+        @Override
+        public void draw(Graphics2D g) {
+            for (int i = 0; i < getPath().size() - 1; i++) {
+                g.drawLine(getPath().get(i).x, getPath().get(i).y, getPath().get(i + 1).x,
+                        getPath().get(i + 1).y);
+            }
+        }
+
+        @Override
+        public void mouseDragged(Point p) {
+            addPoint(p);
         }
 
         public void addPoint(Point p) {
@@ -648,6 +665,39 @@ public class paintingTool extends JFrame {
 
         public Color getColor() {
             return color;
+        }
+    }
+
+    public class drawRectangle extends Brush{
+        private Rectangle2D.Float rect;
+
+        public drawRectangle(Point start, Color color, float width, float alpha)
+        {
+            start = start;
+            this.color = new Color((float) color.getRed() / 255, (float) color.getGreen() / 255,
+                    (float) color.getBlue() / 255, alpha);
+            strokeSettings = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        }
+        @Override
+        public void draw(Graphics2D g) {
+            if(rect!=null)
+                g.draw(rect);
+        }
+
+        @Override
+        public void mouseDragged(Point p) {
+
+        }
+
+        public void createRect(Point start, Point end)
+        {
+            int x = Math.min(start.x, end.x);
+            int y = Math.min(start.y, end.y);
+
+            // Gets the difference between the coordinates and
+            int width = Math.abs(start.x - end.x);
+            int height = Math.abs(start.y - end.y);
+            rect = new Rectangle2D.Float(x, y, width, height);
         }
     }
 
@@ -683,6 +733,22 @@ public class paintingTool extends JFrame {
 
     }
 
+    private abstract class Brush
+    {
+        protected Stroke strokeSettings;
+        protected Color color;
+
+        public abstract void draw(Graphics2D g);
+
+        public abstract void mouseDragged(Point p);
+        public Stroke getStrokeSettings() {
+            return strokeSettings;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+    }
 //	void saveToStack(BufferedImage img) { // makes a copy of img and puts on stack.
 //		BufferedImage imageForStack = new BufferedImage(img.getWidth(), img.getHeight(), img.getType());
 //		Graphics2D g2d = imageForStack.createGraphics();
